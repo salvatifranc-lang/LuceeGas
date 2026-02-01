@@ -3,6 +3,7 @@ import { Card } from '../components/Card'
 import { Button } from '../components/Button'
 import { useGasCalculator } from '../hooks/useGasCalculator'
 import '../styles/windtre.css'
+import { generaPdfGas } from '../pdf/generaPdfGas'
 
 export function GasCalculator() {
   const {
@@ -75,16 +76,38 @@ export function GasCalculator() {
         </div>
       </Card>
 
-      {risultato && (
-        <Card>
-          <h3>Risultato simulazione</h3>
-          <p><strong>Periodo:</strong> {mesiPeriodo.join(', ')}</p>
-          <p><strong>Offerta:</strong> {offertaKey}</p>
-          <p><strong>Spesa materia:</strong> € {risultato.materia.toFixed(2)}</p>
-          <p><strong>Quota fissa:</strong> € {risultato.quota_fissa.toFixed(2)}</p>
-          <p><strong>Totale stimato:</strong> € {risultato.totale.toFixed(2)}</p>
-        </Card>
-      )}
+     {risultato && (
+  <Card>
+    <h3>Risultato simulazione</h3>
+
+    <p><strong>Periodo:</strong> {mesiPeriodo.join(', ')}</p>
+    <p><strong>Offerta:</strong> {offertaKey}</p>
+    <p><strong>Spesa materia:</strong> € {risultato.materia.toFixed(2)}</p>
+    <p><strong>Quota fissa:</strong> € {risultato.quota_fissa.toFixed(2)}</p>
+    <p><strong>Totale stimato:</strong> € {risultato.totale.toFixed(2)}</p>
+
+    <div style={{ marginTop: 24 }}>
+      <Button
+        onClick={() =>
+          generaPdfGas({
+            mesi: mesiPeriodo,
+            offerta:
+              offertaKey === 'clienti_windtre'
+                ? 'Cliente WindTre'
+                : 'Non cliente',
+            consumo_smc: state.consumo_smc,
+            materia: risultato.materia,
+            quota_fissa: risultato.quota_fissa,
+            totale: risultato.totale
+          })
+        }
+      >
+        Scarica PDF
+      </Button>
+    </div>
+  </Card>
+)}
+
     </Section>
   )
 }
