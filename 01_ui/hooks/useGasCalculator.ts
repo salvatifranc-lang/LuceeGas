@@ -6,32 +6,41 @@ import { defaultGasState } from '../../00_state/defaults'
 import { calcolaTotaleGas } from '../../03_calcolo_gas'
 import { OffertaGas } from '../../03_calcolo_gas/types'
 import { offerteGasUI } from '../data/offerteUI'
+import { generaMesiPeriodo } from '../utils/periodi'
 
 export function useGasCalculator() {
   const [state, setState] = useState<GasState>(defaultGasState)
+
   const [offertaKey, setOffertaKey] =
     useState<'clienti_windtre' | 'non_clienti'>('clienti_windtre')
+
+  const [meseInizio, setMeseInizio] = useState('2025-03')
+  const [durata, setDurata] = useState<1 | 2>(1)
+
+  const [mesiPeriodo, setMesiPeriodo] = useState<string[]>(['2025-03'])
   const [risultato, setRisultato] = useState<any>(null)
 
   function aggiornaConsumo(consumo_smc: number) {
     setState(prev => ({ ...prev, consumo_smc }))
   }
 
-  function aggiornaPeriodo(mesi: number) {
-    setState(prev => ({ ...prev, periodo: { mesi } }))
-  }
-
   function selezionaOfferta(key: 'clienti_windtre' | 'non_clienti') {
     setOffertaKey(key)
   }
 
-  function calcola(psvMedio: number) {
+  function aggiornaPeriodo(mese: string, durata: 1 | 2) {
+    setMeseInizio(mese)
+    setDurata(durata)
+    setMesiPeriodo(generaMesiPeriodo(mese, durata))
+  }
+
+  function calcola(psvMedioTemporaneo: number) {
     const offerta: OffertaGas = offerteGasUI[offertaKey]
 
     const res = calcolaTotaleGas(
       state,
       offerta,
-      psvMedio
+      psvMedioTemporaneo
     )
 
     setRisultato(res)
@@ -40,10 +49,13 @@ export function useGasCalculator() {
   return {
     state,
     risultato,
+    mesiPeriodo,
     offertaKey,
+    meseInizio,
+    durata,
     aggiornaConsumo,
-    aggiornaPeriodo,
     selezionaOfferta,
+    aggiornaPeriodo,
     calcola
   }
 }
