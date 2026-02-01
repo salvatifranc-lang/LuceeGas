@@ -1,12 +1,14 @@
 import { Section } from '../components/Section'
 import { Card } from '../components/Card'
 import { Button } from '../components/Button'
+import { ConfrontoBolletta } from '../components/ConfrontoBolletta'
 import { useGasCalculator } from '../hooks/useGasCalculator'
-import '../styles/windtre.css'
 import { generaPdfGas } from '../pdf/generaPdfGas'
+import '../styles/windtre.css'
 
 export function GasCalculator() {
   const {
+    state,
     risultato,
     mesiPeriodo,
     meseInizio,
@@ -14,7 +16,7 @@ export function GasCalculator() {
     offertaKey,
     aggiornaConsumo,
     selezionaOfferta,
-    aggiornaPeriodo,
+    aggiornaPeriodoCalcolo,
     calcola
   } = useGasCalculator()
 
@@ -23,6 +25,7 @@ export function GasCalculator() {
       title="Confronto Bolletta Gas"
       subtitle="Simulazione con PSV reale mensile o bimestrale"
     >
+      {/* INPUT SIMULAZIONE */}
       <Card>
         <label className="w3-label">Tipo cliente</label>
         <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
@@ -39,7 +42,7 @@ export function GasCalculator() {
           type="month"
           className="w3-input"
           value={meseInizio}
-          onChange={e => aggiornaPeriodo(e.target.value, durata)}
+          onChange={e => aggiornaPeriodoCalcolo(e.target.value, durata)}
         />
 
         <label className="w3-label" style={{ marginTop: 16 }}>
@@ -49,7 +52,10 @@ export function GasCalculator() {
           className="w3-input"
           value={durata}
           onChange={e =>
-            aggiornaPeriodo(meseInizio, Number(e.target.value) as 1 | 2)
+            aggiornaPeriodoCalcolo(
+              meseInizio,
+              Number(e.target.value) as 1 | 2
+            )
           }
         >
           <option value={1}>Mensile</option>
@@ -76,38 +82,47 @@ export function GasCalculator() {
         </div>
       </Card>
 
-     {risultato && (
-  <Card>
-    <h3>Risultato simulazione</h3>
+      {/* RISULTATO + PDF */}
+      {risultato && (
+        <>
+          <Card>
+            <h3>Risultato simulazione</h3>
 
-    <p><strong>Periodo:</strong> {mesiPeriodo.join(', ')}</p>
-    <p><strong>Offerta:</strong> {offertaKey}</p>
-    <p><strong>Spesa materia:</strong> € {risultato.materia.toFixed(2)}</p>
-    <p><strong>Quota fissa:</strong> € {risultato.quota_fissa.toFixed(2)}</p>
-    <p><strong>Totale stimato:</strong> € {risultato.totale.toFixed(2)}</p>
+            <p><strong>Periodo:</strong> {mesiPeriodo.join(', ')}</p>
+            <p><strong>Offerta:</strong> {offertaKey}</p>
+            <p><strong>Spesa materia:</strong> € {risultato.materia.toFixed(2)}</p>
+            <p><strong>Quota fissa:</strong> € {risultato.quota_fissa.toFixed(2)}</p>
+            <p><strong>Totale stimato:</strong> € {risultato.totale.toFixed(2)}</p>
 
-    <div style={{ marginTop: 24 }}>
-      <Button
-        onClick={() =>
-          generaPdfGas({
-            mesi: mesiPeriodo,
-            offerta:
-              offertaKey === 'clienti_windtre'
-                ? 'Cliente WindTre'
-                : 'Non cliente',
-            consumo_smc: state.consumo_smc,
-            materia: risultato.materia,
-            quota_fissa: risultato.quota_fissa,
-            totale: risultato.totale
-          })
-        }
-      >
-        Scarica PDF
-      </Button>
-    </div>
-  </Card>
-)}
+            <div style={{ marginTop: 24 }}>
+              <Button
+                onClick={() =>
+                  generaPdfGas({
+                    mesi: mesiPeriodo,
+                    offerta:
+                      offertaKey === 'clienti_windtre'
+                        ? 'Cliente WindTre'
+                        : 'Non cliente',
+                    consumo_smc: state.consumo_smc,
+                    materia: risultato.materia,
+                    quota_fissa: risultato.quota_fissa,
+                    totale: risultato.totale
+                  })
+                }
+              >
+                Scarica PDF
+              </Button>
+            </div>
+          </Card>
 
+          {/* CONFRONTO PRIMA / DOPO */}
+          <ConfrontoBolletta
+            totalePrecedente={state.bolletta_precedente.totale}
+            totaleNuovo={risultato.totale}
+            periodoMesi={state.periodo.mesi}
+          />
+        </>
+      )}
     </Section>
   )
 }
