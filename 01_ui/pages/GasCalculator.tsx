@@ -20,7 +20,7 @@ export function GasCalculator() {
   return (
     <Section
       title="Confronto Bolletta Gas"
-      subtitle="Simulazione mensile o bimestrale con PSV reale"
+      subtitle="Simulazione con PSV reale mensile o bimestrale"
     >
       <Card>
         <label className="w3-label">Tipo cliente</label>
@@ -69,7 +69,7 @@ export function GasCalculator() {
         </p>
 
         <div style={{ marginTop: 24 }}>
-          <Button onClick={() => calcola(0.4031)}>
+          <Button onClick={calcola}>
             Calcola
           </Button>
         </div>
@@ -78,8 +78,10 @@ export function GasCalculator() {
       {risultato && (
         <Card>
           <h3>Risultato simulazione</h3>
-          <p><strong>Offerta:</strong> {offertaKey}</p>
           <p><strong>Periodo:</strong> {mesiPeriodo.join(', ')}</p>
+          <p><strong>Offerta:</strong> {offertaKey}</p>
+          <p><strong>Spesa materia:</strong> € {risultato.materia.toFixed(2)}</p>
+          <p><strong>Quota fissa:</strong> € {risultato.quota_fissa.toFixed(2)}</p>
           <p><strong>Totale stimato:</strong> € {risultato.totale.toFixed(2)}</p>
         </Card>
       )}
