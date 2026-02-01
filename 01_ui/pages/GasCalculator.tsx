@@ -8,17 +8,30 @@ export function GasCalculator() {
   const {
     state,
     risultato,
+    offertaKey,
     aggiornaConsumo,
     aggiornaPeriodo,
+    selezionaOfferta,
     calcola
   } = useGasCalculator()
 
   return (
     <Section
       title="Confronto Bolletta Gas"
-      subtitle="Simula il risparmio con WindTre Luce e Gas"
+      subtitle="Scegli l’offerta WindTre Luce e Gas più adatta"
     >
       <Card>
+        <label className="w3-label">Sei cliente WindTre?</label>
+
+        <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
+          <Button onClick={() => selezionaOfferta('clienti_windtre')}>
+            Cliente WindTre
+          </Button>
+          <Button onClick={() => selezionaOfferta('non_clienti')}>
+            Non cliente
+          </Button>
+        </div>
+
         <label className="w3-label">Consumo totale (Smc)</label>
         <input
           className="w3-input"
@@ -46,6 +59,10 @@ export function GasCalculator() {
       {risultato && (
         <Card>
           <h3>Risultato simulazione</h3>
+          <p><strong>Offerta:</strong> {offertaKey === 'clienti_windtre'
+            ? 'Cliente WindTre'
+            : 'Non cliente'}
+          </p>
           <p>Prezzo €/Smc: {risultato.prezzo_smc.toFixed(4)}</p>
           <p>Spesa materia: € {risultato.materia.toFixed(2)}</p>
           <p>Quota fissa: € {risultato.quota_fissa.toFixed(2)}</p>
