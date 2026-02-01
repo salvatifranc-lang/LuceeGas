@@ -16,8 +16,10 @@ export function useGasCalculator() {
 
   const [meseInizio, setMeseInizio] = useState('2025-03')
   const [durata, setDurata] = useState<1 | 2>(1)
+  const [mesiPeriodo, setMesiPeriodo] = useState<string[]>(
+    generaMesiPeriodo('2025-03', 1)
+  )
 
-  const [mesiPeriodo, setMesiPeriodo] = useState<string[]>(['2025-03'])
   const [risultato, setRisultato] = useState<any>(null)
 
   function aggiornaConsumo(consumo_smc: number) {
@@ -34,13 +36,13 @@ export function useGasCalculator() {
     setMesiPeriodo(generaMesiPeriodo(mese, durata))
   }
 
-  function calcola(psvMedioTemporaneo: number) {
+  function calcola() {
     const offerta: OffertaGas = offerteGasUI[offertaKey]
 
     const res = calcolaTotaleGas(
       state,
       offerta,
-      psvMedioTemporaneo
+      mesiPeriodo
     )
 
     setRisultato(res)
