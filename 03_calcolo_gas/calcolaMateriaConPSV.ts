@@ -3,7 +3,7 @@
 type PSVMap = Record<string, number>
 
 /**
- * Calcola la spesa materia gas su base mensile
+ * Calcola la spesa materia gas mese per mese
  * ripartendo il consumo in modo uniforme
  */
 export function calcolaMateriaConPSV(
@@ -12,10 +12,15 @@ export function calcolaMateriaConPSV(
   psv: PSVMap,
   spread: number
 ): number {
+  if (mesi.length === 0) {
+    throw new Error('Periodo senza mesi')
+  }
+
   const consumoPerMese = consumo_totale_smc / mesi.length
 
   return mesi.reduce((totale, mese) => {
     const prezzoPSV = psv[mese]
+
     if (prezzoPSV === undefined) {
       throw new Error(`PSV mancante per il mese ${mese}`)
     }
