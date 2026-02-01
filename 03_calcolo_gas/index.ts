@@ -1,4 +1,5 @@
 // 03_calcolo_gas/index.ts
 
 export { calcolaTotaleGas } from './calcolaTotaleGas'
-export { calcolaPrezzoSmc } from './calcolaPrezzoSmc'
+export { calcolaMateriaConPSV } from './calcolaMateriaConPSV'
+export type { OffertaGas } from './types'
