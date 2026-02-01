@@ -1,36 +1,51 @@
+import { useState } from 'react'
 import { Card } from '../components/Card'
 
+type Costi = {
+  materia: number
+  trasporto: number
+  oneri: number
+  imposte: number
+  totale: number
+}
+
 type Props = {
-  onNext: () => void
+  onNext: (costi: Costi) => void
 }
 
 export function StepCosti({ onNext }: Props) {
+  const [costi, setCosti] = useState<Costi>({
+    materia: 0,
+    trasporto: 0,
+    oneri: 0,
+    imposte: 0,
+    totale: 0
+  })
+
+  function update(key: keyof Costi, value: number) {
+    setCosti(prev => ({ ...prev, [key]: value }))
+  }
+
   return (
     <Card>
-      <h3>Costi in bolletta</h3>
+      <h3>Costi bolletta</h3>
 
-      <label className="w3-label">Spesa materia gas</label>
-      <input className="w3-input" type="number" />
-
-      <label className="w3-label">Trasporto e gestione</label>
-      <input className="w3-input" type="number" />
-
-      <label className="w3-label">Oneri di sistema</label>
-      <input className="w3-input" type="number" />
-
-      <label className="w3-label">Imposte</label>
-      <input className="w3-input" type="number" />
-
-      <label className="w3-label">Totale bolletta</label>
-      <input className="w3-input" type="number" />
-
-      <p style={{ marginTop: 12, color: '#ff6a00' }}>
-        ⚠️ Se il totale non coincide con la somma delle voci,
-        controlla i valori inseriti.
-      </p>
+      {(['materia','trasporto','oneri','imposte','totale'] as const).map(k => (
+        <div key={k}>
+          <label className="w3-label">{k}</label>
+          <input
+            className="w3-input"
+            type="number"
+            value={costi[k]}
+            onChange={e => update(k, Number(e.target.value))}
+          />
+        </div>
+      ))}
 
       <div style={{ marginTop: 24 }}>
-        <button onClick={onNext}>Completa inserimento</button>
+        <button onClick={() => onNext(costi)}>
+          Completa inserimento
+        </button>
       </div>
     </Card>
   )
