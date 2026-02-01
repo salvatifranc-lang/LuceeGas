@@ -1,24 +1,26 @@
+import { useState } from 'react'
 import { Card } from '../components/Card'
 
 type Props = {
-  onNext: () => void
+  onNext: (consumo: number) => void
 }
 
 export function StepConsumi({ onNext }: Props) {
+  const [consumo, setConsumo] = useState(0)
+
   return (
     <Card>
-      <h3>Consumo totale</h3>
+      <h3>Consumo totale (Smc)</h3>
 
-      <p>
-        Inserisci il consumo totale in Smc.
-        <br />
-        <small>Lo trovi nel riepilogo consumi.</small>
-      </p>
-
-      <input className="w3-input" type="number" placeholder="Es. 240" />
+      <input
+        className="w3-input"
+        type="number"
+        value={consumo}
+        onChange={e => setConsumo(Number(e.target.value))}
+      />
 
       <div style={{ marginTop: 24 }}>
-        <button onClick={onNext}>Avanti</button>
+        <button onClick={() => onNext(consumo)}>Avanti</button>
       </div>
     </Card>
   )
