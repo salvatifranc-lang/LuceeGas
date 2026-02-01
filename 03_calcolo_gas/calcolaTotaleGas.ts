@@ -2,14 +2,14 @@
 
 import { GasState } from '../00_state/gasState'
 import {
-  calcolaMateriaGas,
   calcolaQuotaFissa,
   calcolaImposteProporzionali
 } from '../02_voci_bolletta'
-import { calcolaPrezzoSmc } from './calcolaPrezzoSmc'
+import { OffertaGas } from './types'
+import { calcolaMateriaConPSV } from './calcolaMateriaConPSV'
+import psvData from '../data/psv.json'
 
-type RisultatoCalcoloGas = {
-  prezzo_smc: number
+export type RisultatoCalcoloGas = {
   materia: number
   quota_fissa: number
   imposte: number
@@ -17,29 +17,28 @@ type RisultatoCalcoloGas = {
 }
 
 /**
- * Calcolo completo della nuova bolletta GAS (MVP)
+ * Calcolo completo nuova bolletta GAS
+ * con PSV mensile / bimestrale reale
  */
 export function calcolaTotaleGas(
   state: GasState,
-  psv_medio_periodo?: number
+  offerta: OffertaGas,
+  mesiPeriodo: string[]
 ): RisultatoCalcoloGas {
-  if (!state.nuova_offerta) {
-    throw new Error('Nuova offerta mancante')
+  if (offerta.tipo !== 'variabile') {
+    throw new Error('Al momento è supportata solo offerta variabile')
   }
 
-  const prezzo_smc = calcolaPrezzoSmc(
-    state.nuova_offerta as any,
-    psv_medio_periodo
-  )
-
-  const materia = calcolaMateriaGas(
+  const materia = calcolaMateriaConPSV(
     state.consumo_smc,
-    prezzo_smc
+    mesiPeriodo,
+    psvData,
+    offerta.spread
   )
 
   const quota_fissa = calcolaQuotaFissa(
-    state.nuova_offerta.quota_fissa_mese,
-    state.periodo.mesi
+    offerta.quota_fissa_mese,
+    mesiPeriodo.length
   )
 
   const imposte = calcolaImposteProporzionali(
@@ -56,7 +55,6 @@ export function calcolaTotaleGas(
     imposte
 
   return {
-    prezzo_smc,
     materia,
     quota_fissa,
     imposte,
