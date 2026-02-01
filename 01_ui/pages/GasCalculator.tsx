@@ -6,23 +6,24 @@ import '../styles/windtre.css'
 
 export function GasCalculator() {
   const {
-    state,
     risultato,
+    mesiPeriodo,
+    meseInizio,
+    durata,
     offertaKey,
     aggiornaConsumo,
-    aggiornaPeriodo,
     selezionaOfferta,
+    aggiornaPeriodo,
     calcola
   } = useGasCalculator()
 
   return (
     <Section
       title="Confronto Bolletta Gas"
-      subtitle="Scegli l’offerta WindTre Luce e Gas più adatta"
+      subtitle="Simulazione mensile o bimestrale con PSV reale"
     >
       <Card>
-        <label className="w3-label">Sei cliente WindTre?</label>
-
+        <label className="w3-label">Tipo cliente</label>
         <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
           <Button onClick={() => selezionaOfferta('clienti_windtre')}>
             Cliente WindTre
@@ -32,26 +33,44 @@ export function GasCalculator() {
           </Button>
         </div>
 
-        <label className="w3-label">Consumo totale (Smc)</label>
+        <label className="w3-label">Mese iniziale</label>
+        <input
+          type="month"
+          className="w3-input"
+          value={meseInizio}
+          onChange={e => aggiornaPeriodo(e.target.value, durata)}
+        />
+
+        <label className="w3-label" style={{ marginTop: 16 }}>
+          Durata
+        </label>
+        <select
+          className="w3-input"
+          value={durata}
+          onChange={e =>
+            aggiornaPeriodo(meseInizio, Number(e.target.value) as 1 | 2)
+          }
+        >
+          <option value={1}>Mensile</option>
+          <option value={2}>Bimestrale</option>
+        </select>
+
+        <label className="w3-label" style={{ marginTop: 16 }}>
+          Consumo totale (Smc)
+        </label>
         <input
           className="w3-input"
           type="number"
           onChange={e => aggiornaConsumo(Number(e.target.value))}
         />
 
-        <label className="w3-label" style={{ marginTop: 16 }}>
-          Periodo (mesi)
-        </label>
-        <input
-          className="w3-input"
-          type="number"
-          value={state.periodo.mesi}
-          onChange={e => aggiornaPeriodo(Number(e.target.value))}
-        />
+        <p style={{ marginTop: 16 }}>
+          <strong>Mesi considerati:</strong> {mesiPeriodo.join(', ')}
+        </p>
 
         <div style={{ marginTop: 24 }}>
           <Button onClick={() => calcola(0.4031)}>
-            Calcola risparmio
+            Calcola
           </Button>
         </div>
       </Card>
@@ -59,14 +78,9 @@ export function GasCalculator() {
       {risultato && (
         <Card>
           <h3>Risultato simulazione</h3>
-          <p><strong>Offerta:</strong> {offertaKey === 'clienti_windtre'
-            ? 'Cliente WindTre'
-            : 'Non cliente'}
-          </p>
-          <p>Prezzo €/Smc: {risultato.prezzo_smc.toFixed(4)}</p>
-          <p>Spesa materia: € {risultato.materia.toFixed(2)}</p>
-          <p>Quota fissa: € {risultato.quota_fissa.toFixed(2)}</p>
-          <p><strong>Totale stimato: € {risultato.totale.toFixed(2)}</strong></p>
+          <p><strong>Offerta:</strong> {offertaKey}</p>
+          <p><strong>Periodo:</strong> {mesiPeriodo.join(', ')}</p>
+          <p><strong>Totale stimato:</strong> € {risultato.totale.toFixed(2)}</p>
         </Card>
       )}
     </Section>
